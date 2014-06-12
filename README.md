@@ -6,6 +6,10 @@ system.
 [mt]: https://github.com/seattlerb/minitest
 [ci]: https://github.com/ci-reporter/ci_reporter
 
+## Supported versions
+
+The latest release of Minitest 2.2 is supported.
+
 ## Installation
 
 Add this line to your application's Gemfile:
