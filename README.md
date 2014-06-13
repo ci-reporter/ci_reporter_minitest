@@ -5,6 +5,7 @@ system.
 
 [![Gem Version](https://badge.fury.io/rb/ci_reporter_minitest.svg)](http://badge.fury.io/rb/ci_reporter_minitest)
 [![Build Status](https://travis-ci.org/ci-reporter/ci_reporter_minitest.svg?branch=master)](https://travis-ci.org/ci-reporter/ci_reporter_minitest)
+[![Dependency Status](https://gemnasium.com/ci-reporter/ci_reporter_minitest.svg)](https://gemnasium.com/ci-reporter/ci_reporter_minitest)
 [![Code Climate](https://codeclimate.com/github/ci-reporter/ci_reporter_minitest.png)](https://codeclimate.com/github/ci-reporter/ci_reporter_minitest)
 
 [mt]: https://github.com/seattlerb/minitest
