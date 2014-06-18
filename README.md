@@ -13,7 +13,7 @@ system.
 
 ## Supported versions
 
-The latest release of Minitest 2.2 is supported.
+The latest release of Minitest 5.x is supported.
 
 ## Installation
 
@@ -32,7 +32,7 @@ $ bundle
 ## Usage
 
 Require the reporter in your Rakefile, and ensure that
-`ci:setup:minitest` is a dependency of your RSpec task:
+`ci:setup:minitest` is a dependency of your minitest task:
 
 ```ruby
 require 'ci/reporter/rake/minitest'
