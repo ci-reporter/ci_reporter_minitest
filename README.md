@@ -13,7 +13,7 @@ system.
 
 ## Supported versions
 
-The latest release of Minitest 5.x is supported.
+The latest release of Minitest 4.x is supported.
 
 ## Installation
 
