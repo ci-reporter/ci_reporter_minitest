@@ -1,24 +1,24 @@
 require 'minitest/autorun'
 
-class ExampleWithAFailure < MiniTest::Unit::TestCase
+class ExampleWithAFailure < Minitest::Test
   def test_failure
     assert false
   end
 end
 
-class ExampleWithAnError < MiniTest::Unit::TestCase
+class ExampleWithAnError < Minitest::Test
   def test_error
     raise "second failure"
   end
 end
 
-class ExampleThatPasses < MiniTest::Unit::TestCase
+class ExampleThatPasses < Minitest::Test
   def test_passes
     assert true
   end
 end
 
-class ExampleWithOutput < MiniTest::Unit::TestCase
+class ExampleWithOutput < Minitest::Test
   def test_stdout
     $stdout.puts "This is stdout!"
   end
