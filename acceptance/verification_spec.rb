@@ -40,7 +40,6 @@ describe "MiniTest::Unit acceptance" do
 
   context "generated files" do
     it "generates XML files for each class" do
-      pending "A rogue file is created"
       expect(Dir["#{REPORTS_DIR}/*.xml"].count).to eql 4
     end
 
