@@ -1,6 +1,24 @@
 require 'rexml/document'
+require 'rspec/collection_matchers'
 
 REPORTS_DIR = File.dirname(__FILE__) + '/reports'
+
+shared_examples "a report with consistent attribute counts" do
+  describe "the failure count" do
+    subject { result.failures_count }
+    it { is_expected.to eql result.failures.count }
+  end
+
+  describe "the error count" do
+    subject { result.errors_count }
+    it { is_expected.to eql result.errors.count }
+  end
+
+  describe "the test count" do
+    subject { result.tests_count }
+    it { is_expected.to eql result.testcases.count }
+  end
+end
 
 describe "MiniTest::Unit acceptance" do
   let(:failure_report_path) { File.join(REPORTS_DIR, 'TEST-ExampleWithAFailure.xml') }
@@ -32,124 +50,99 @@ describe "MiniTest::Unit acceptance" do
   end
 
   context "a test with a failure" do
-    let (:root) { load_xml_result(failure_report_path).root }
+    subject(:result) { Accessor.new(load_xml_result(failure_report_path)) }
 
-    it "has one failure" do
-      expect(root.attributes["failures"]).to eql "1"
+    it { is_expected.to have(1).failures }
+    it { is_expected.to have(0).errors }
+    it { is_expected.to have(1).testcases }
+
+    describe "the assertion count" do
+      subject { result.assertions_count }
+      it { is_expected.to eql 1 }
     end
 
-    it "has zero errors" do
-      expect(root.attributes["errors"]).to eql "0"
-    end
-
-    it "has one assertion" do
-      expect(root.attributes["assertions"]).to eql "1"
-    end
-
-    it "has one test" do
-      expect(root.attributes["tests"]).to eql "1"
-    end
-
-    it "has one testcase" do
-      expect(root.elements.to_a("/testsuite/testcase").size).to eql 1
-    end
-
-    context "the testcase" do
-      it "has a failure" do
-        expect(root.elements.to_a("/testsuite/testcase/failure").size).to eql 1
-      end
-
-      it "has no errors" do
-        expect(root.elements.to_a("/testsuite/testcase/error").size).to eql 0
-      end
-    end
+    it_behaves_like "a report with consistent attribute counts"
   end
 
   context "a test with an error" do
-    let (:root) { load_xml_result(error_report_path).root }
+    subject(:result) { Accessor.new(load_xml_result(error_report_path)) }
 
-    it "has zero failures" do
-      expect(root.attributes["failures"]).to eql "0"
+    it { is_expected.to have(0).failures }
+    it { is_expected.to have(1).errors }
+    it { is_expected.to have(1).testcases }
+
+    describe "the assertion count" do
+      subject { result.assertions_count }
+      it { is_expected.to eql 0 }
     end
 
-    it "has an error" do
-      expect(root.attributes["errors"]).to eql "1"
-    end
-
-    it "has no assertions" do
-      expect(root.attributes["assertions"]).to eql "0"
-    end
-
-    it "has one test" do
-      expect(root.attributes["tests"]).to eql "1"
-    end
-
-    it "has one testcase" do
-      expect(root.elements.to_a("/testsuite/testcase").size).to eql 1
-    end
-
-    context "the testcase" do
-      it "has no failures" do
-        expect(root.elements.to_a("/testsuite/testcase/failure").size).to eql 0
-      end
-
-      it "has an error" do
-        expect(root.elements.to_a("/testsuite/testcase/error").size).to eql 1
-      end
-    end
+    it_behaves_like "a report with consistent attribute counts"
   end
 
   context "a test that outputs to STDOUT and STDERR" do
-    let (:root) { load_xml_result(output_report_path).root }
+    subject(:result) { Accessor.new(load_xml_result(output_report_path)) }
 
     it "captures the STDOUT" do
-      content = root.elements.to_a("/testsuite/system-out").first.texts.inject("") do |c,e|
-        c << e.value; c
-      end.strip
-
-      expect(content).to eql "This is stdout!"
+      expect(result.system_out).to eql "This is stdout!"
     end
 
     it "captures the STDERR" do
-      content = root.elements.to_a("/testsuite/system-err").first.texts.inject("") do |c,e|
-        c << e.value; c
-      end.strip
-
-      expect(content).to eql "This is stderr!"
+      expect(result.system_err).to eql "This is stderr!"
     end
   end
 
   context "a passing test" do
-    let(:root) { load_xml_result(passing_report_path).root }
+    subject(:result) { Accessor.new(load_xml_result(passing_report_path)) }
 
-    it "has zero errors" do
-      expect(root.attributes["errors"]).to eql "0"
+    it { is_expected.to have(0).failures }
+    it { is_expected.to have(0).errors }
+    it { is_expected.to have(1).testcases }
+
+    describe "the assertion count" do
+      subject { result.assertions_count }
+      it { is_expected.to eql 1 }
     end
 
-    it "has zero failures" do
-      expect(root.attributes["failures"]).to eql "0"
+    it_behaves_like "a report with consistent attribute counts"
+  end
+
+  class Accessor
+    attr_reader :root
+
+    def initialize(xml)
+      @root = xml.root
     end
 
-    it "has one assertion" do
-      expect(root.attributes["assertions"]).to eql "1"
+    def failures
+      root.elements.to_a("/testsuite/testcase/failure")
     end
 
-    it "has one test" do
-      expect(root.attributes["tests"]).to eql "1"
+    def errors
+      root.elements.to_a("/testsuite/testcase/error")
     end
 
-    it "has one testcase" do
-      expect(root.elements.to_a("/testsuite/testcase").size).to eql 1
+    def testcases
+      root.elements.to_a("/testsuite/testcase")
     end
 
-    context "the testcase" do
-      it "has no failures" do
-        expect(root.elements.to_a("/testsuite/testcase/failure").size).to eql 0
+    [:failures, :errors, :assertions, :tests].each do |attr|
+      define_method "#{attr}_count" do
+        root.attributes[attr.to_s].to_i
       end
+    end
 
-      it "has no errors" do
-        expect(root.elements.to_a("/testsuite/testcase/error").size).to eql 0
-      end
+    def system_out
+      all_text_nodes_as_string("/testsuite/system-out")
+    end
+
+    def system_err
+      all_text_nodes_as_string("/testsuite/system-err")
+    end
+
+    private
+
+    def all_text_nodes_as_string(xpath)
+      root.elements.to_a(xpath).map(&:texts).flatten.map(&:value).join.strip
     end
   end
 
