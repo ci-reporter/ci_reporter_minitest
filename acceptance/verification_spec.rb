@@ -3,6 +3,18 @@ require 'rspec/collection_matchers'
 
 REPORTS_DIR = File.dirname(__FILE__) + '/reports'
 
+shared_examples "nothing was output" do
+  describe "stdout" do
+    subject { result.system_out }
+    it { is_expected.to be_empty }
+  end
+
+  describe "stderr" do
+    subject { result.system_err }
+    it { is_expected.to be_empty }
+  end
+end
+
 shared_examples "a report with consistent attribute counts" do
   describe "the failure count" do
     subject { result.failures_count }
@@ -61,6 +73,7 @@ describe "MiniTest::Unit acceptance" do
       it { is_expected.to eql 1 }
     end
 
+    it_behaves_like "nothing was output"
     it_behaves_like "a report with consistent attribute counts"
   end
 
@@ -76,6 +89,7 @@ describe "MiniTest::Unit acceptance" do
       it { is_expected.to eql 0 }
     end
 
+    it_behaves_like "nothing was output"
     it_behaves_like "a report with consistent attribute counts"
   end
 
@@ -103,6 +117,7 @@ describe "MiniTest::Unit acceptance" do
       it { is_expected.to eql 1 }
     end
 
+    it_behaves_like "nothing was output"
     it_behaves_like "a report with consistent attribute counts"
   end
 
