@@ -38,26 +38,8 @@ describe "MiniTest::Unit acceptance" do
   let(:passing_report_path) { File.join(REPORTS_DIR, 'TEST-ExampleThatPasses.xml') }
   let(:output_report_path)  { File.join(REPORTS_DIR, 'TEST-ExampleWithOutput.xml') }
 
-  context "generated files" do
-    it "generates XML files for each class" do
-      expect(Dir["#{REPORTS_DIR}/*.xml"].count).to eql 4
-    end
-
-    it "generates XML for the failing test" do
-      expect(File.exist?(failure_report_path)).to be true
-    end
-
-    it "generates XML for the errored test" do
-      expect(File.exist?(error_report_path)).to be true
-    end
-
-    it "generates XML for the passing test" do
-      expect(File.exist?(passing_report_path)).to be true
-    end
-
-    it "generates XML for the output capturing test" do
-      expect(File.exist?(output_report_path)).to be true
-    end
+  it "generates only one XML file for each test class" do
+    expect(Dir["#{REPORTS_DIR}/*.xml"].count).to eql 4
   end
 
   context "a test with a failure" do
