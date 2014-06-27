@@ -1,17 +1,29 @@
 require 'minitest/autorun'
 
-class MiniTestExampleTestOne < MiniTest::Unit::TestCase
-  def test_one
-    puts "Some <![CDATA[on stdout]]>"
+class ExampleWithAFailure < Minitest::Test
+  def test_failure
     assert false
   end
-  def teardown
+end
+
+class ExampleWithAnError < Minitest::Test
+  def test_error
     raise "second failure"
   end
 end
 
-class MiniTestExampleTestTwo < MiniTest::Unit::TestCase
-  def test_two
+class ExampleThatPasses < Minitest::Test
+  def test_passes
     assert true
+  end
+end
+
+class ExampleWithOutput < Minitest::Test
+  def test_stdout
+    $stdout.puts "This is stdout!"
+  end
+
+  def test_stderr
+    $stderr.puts "This is stderr!"
   end
 end

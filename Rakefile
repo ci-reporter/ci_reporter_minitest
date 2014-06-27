@@ -8,7 +8,7 @@ namespace :generate do
   end
 
   task :minitest do
-    run_ruby_acceptance "-rci/reporter/rake/minitest_loader acceptance/minitest_example_test.rb"
+    run_ruby_acceptance "acceptance/minitest_example_test.rb --ci-reporter"
   end
 
   task :all => [:clean, :minitest]
