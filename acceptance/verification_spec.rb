@@ -1,38 +1,14 @@
 require 'rexml/document'
 require 'rspec/collection_matchers'
+require 'ci/reporter/test_utils/accessor'
+require 'ci/reporter/test_utils/shared_examples'
 
 REPORTS_DIR = File.dirname(__FILE__) + '/reports'
 
-shared_examples "nothing was output" do
-  describe "stdout" do
-    subject { result.system_out }
-    it { is_expected.to be_empty }
-  end
-
-  describe "stderr" do
-    subject { result.system_err }
-    it { is_expected.to be_empty }
-  end
-end
-
-shared_examples "a report with consistent attribute counts" do
-  describe "the failure count" do
-    subject { result.failures_count }
-    it { is_expected.to eql result.failures.count }
-  end
-
-  describe "the error count" do
-    subject { result.errors_count }
-    it { is_expected.to eql result.errors.count }
-  end
-
-  describe "the test count" do
-    subject { result.tests_count }
-    it { is_expected.to eql result.testcases.count }
-  end
-end
-
 describe "MiniTest::Unit acceptance" do
+  include CI::Reporter::TestUtils::SharedExamples
+  Accessor = CI::Reporter::TestUtils::Accessor
+
   let(:failure_report_path) { File.join(REPORTS_DIR, 'TEST-ExampleWithAFailure.xml') }
   let(:error_report_path)   { File.join(REPORTS_DIR, 'TEST-ExampleWithAnError.xml') }
   let(:passing_report_path) { File.join(REPORTS_DIR, 'TEST-ExampleThatPasses.xml') }
@@ -100,46 +76,6 @@ describe "MiniTest::Unit acceptance" do
 
     it_behaves_like "nothing was output"
     it_behaves_like "a report with consistent attribute counts"
-  end
-
-  class Accessor
-    attr_reader :root
-
-    def initialize(xml)
-      @root = xml.root
-    end
-
-    def failures
-      root.elements.to_a("/testsuite/testcase/failure")
-    end
-
-    def errors
-      root.elements.to_a("/testsuite/testcase/error")
-    end
-
-    def testcases
-      root.elements.to_a("/testsuite/testcase")
-    end
-
-    [:failures, :errors, :assertions, :tests].each do |attr|
-      define_method "#{attr}_count" do
-        root.attributes[attr.to_s].to_i
-      end
-    end
-
-    def system_out
-      all_text_nodes_as_string("/testsuite/system-out")
-    end
-
-    def system_err
-      all_text_nodes_as_string("/testsuite/system-err")
-    end
-
-    private
-
-    def all_text_nodes_as_string(xpath)
-      root.elements.to_a(xpath).map(&:texts).flatten.map(&:value).join.strip
-    end
   end
 
   def load_xml_result(path)
