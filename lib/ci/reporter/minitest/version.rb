@@ -1,7 +1,7 @@
 module CI
   module Reporter
-    class Minitest
-      VERSION = "0.0.1"
+    module Minitest
+      VERSION = "0.0.2"
     end
   end
 end
