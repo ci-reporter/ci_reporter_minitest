@@ -41,7 +41,7 @@ require 'ci/reporter/rake/minitest'
 # Rake code that creates a task called `:minitest`
 # ...
 
-task :minitest => 'ci:setup:minitest'
+task :test => 'ci:setup:minitest'
 ```
 
 ### Advanced usage
