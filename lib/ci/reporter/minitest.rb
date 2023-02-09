@@ -77,13 +77,13 @@ module CI
         # suite we are in, and is only called at the granularity of a
         # test. We have to work backwards to understand when the suite
         # changes.
-        if @current_suite_class != result.class
+        if @current_suite_class != result.klass
           finish_suite
           start_suite
         end
 
-        @current_suite_class = result.class
-        @current_suite.name = result.class.to_s
+        @current_suite_class = result.klass
+        @current_suite.name = result.klass.to_s
 
         tc = TestCase.new(result.name, result.time, result.assertions)
         tc.failures = result.failures.map {|f| Failure.classify(f)}
